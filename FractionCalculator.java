@@ -3,54 +3,61 @@ import java.util.Scanner;
 public class FractionCalculator{
 	private Fraction storedValue;
 	private String operator;
-	private String input;
 	private int errorCount;
-	private final String[] exits = new String[] {"Q","q","Quit","quit"};
+	private static final String[] exits = new String[] {"Q","q","Quit","quit"};
 	private final String[] abs = new String[] {"A","a","abs"};
 	private final String[] negs = new String[] {"N","n","neg"};
 	private final String[] clears = new String[] {"C","c","clear"};
 	
 	public FractionCalculator() {
 		// Set the value to 0 upon initialisation
-		this.setStored(this.makeFraction("0/1"));
+		this.setStored(makeFraction("0/1"));
 		//Set errors to 0 but don't print a message;
 		this.setErrors(0,"");
-	    Scanner sc = new Scanner(System.in);
-		System.out.println("Welcome to John Spear's Fraction Calculator!");
-		//Keep going until they quit or there is an error.
-		while((this.getErrors() == 0)&&(findInArray(exits,input = sc.nextLine()) == false)){
-			// Set the operator to nothing upon each new line (seems to be what the example suggests)
-			this.setOperator("0");
-			// Now evaluate the line that they have put in
-			this.setStored(this.evaluate(this.getStored(), input));
-			
-			//Print out the current value if there are no errors.
-			if (this.getErrors() == 0) {
-				System.out.println(this.storedValue.toString());
-				break;
-			}
-		}
-		//They are finished now. Thank them for using the calculator.
-		System.out.println("Thanks for using John's calculator.");	
+		
 	}
 
-	public Fraction evaluate(Fraction fraction, String inputString) {
+    public static void main(String[] args) {
+			//Create a new fraction calculator
+			FractionCalculator calc = new FractionCalculator();
+			//Create a new input
+			Scanner sc = new Scanner(System.in);
+			String input = "";
+			System.out.println("Welcome to John Spear's Fraction Calculator!");
 
-			//Create an array of all inputs, breaking it by space.
-			//Remove any spaces from the beggining and end and then explode into an array.
+			//Keep going until they quit or there is an error.
+			while((calc.getErrors() == 0)&&(findInArray(exits,input = sc.nextLine()) == false)){
+				// Now evaluate the line that they have put in
+				calc.setStored(calc.evaluate(calc.getStored(), input));
+				//Print out the current value if there are no errors.
+				if (calc.getErrors() == 0) {
+					System.out.println(calc.storedValue.toString());
+				} else {
+					//Otherwise exit the loop
+					break;
+				}
+			}
+			//They are finished now. Thank them for using the calculator.
+			System.out.println("Goodbye. Thanks for using John's calculator.");	
+	}
+	
+	public Fraction evaluate(Fraction fraction, String input) {
+			//Create an array of the input string, breaking it by space.
+			//Remove any spaces from the beggining and end and then explode into an array - then loop through it.
 			String[] in = input.trim().split(" ");
+			// Set the operator to nothing upon each new input (seems to be what the example suggests)
+			this.setOperator("0");
 			for(int i = 0; i < in.length; i++) {
-				
 				if (this.isOperator(in[i])) {
 					//This is an operator. Set the operator.
 					this.setOperator(in[i]);
-				} else if ((this.isFraction(in[i])) && (this.getOperator().equals("0"))) {
+				} else if ((isFraction(in[i])) && (getOperator().equals("0"))) {
 					//This is a fraction but there is no operator so we are setting the current value to this
 					fraction = this.makeFraction(in[i]);									
 				} else if (isFraction(in[i])) {
 					//This is a fraction and there is an operator.
-					Fraction tempFraction = this.makeFraction(in[i]);
-					switch(getOperator()) {
+					Fraction tempFraction = makeFraction(in[i]);
+					switch(this.getOperator()) {
 						case "+":
 							fraction = fraction.add(tempFraction);
 							break;
@@ -84,23 +91,15 @@ public class FractionCalculator{
 				}
 			}
 			return fraction;
-	}	
+	}
+	
+	//Start of accessors/mutators
 	private void setStored(Fraction value) {
 		this.storedValue = value;
 	}
 	
-	private Fraction getStored() {
+	public Fraction getStored() {
 		return this.storedValue;
-	}
-	
-
-	
-	public static Boolean isOperator(String value) {
-		Boolean result = false;
-		if ((value.equals("+")) || (value.equals("/")) || (value.equals("*")) || (value.equals("-"))) {
-			result = true;
-		}
-		return result;
 	}
 	
 	private void setOperator(String value) {
@@ -110,7 +109,20 @@ public class FractionCalculator{
 	private String getOperator() {
 		return this.operator;
 	}
+
+	private int getErrors() {
+		return this.errorCount;
+	}
 	
+	private void setErrors(int errors, String value) {
+		this.errorCount = errors;
+		if (!(value.equals(""))) {
+			System.out.println(value + " Your operator at the time of the error was :" + this.getOperator());
+		}
+	}
+	//End of accessors/mutators
+	
+	// Start of type checking methods
 	public static Boolean isFraction(String value) {
 		Boolean result = false;
 		if(value.contains("/"))  {
@@ -121,7 +133,40 @@ public class FractionCalculator{
 		return result;
 	}
 	
-	private Fraction makeFraction(String value) {
+	public static Boolean isOperator(String value) {
+		Boolean result = false;
+		if ((value.equals("+")) || (value.equals("/")) || (value.equals("*")) || (value.equals("-"))) {
+			result = true;
+		}
+		return result;
+	}
+
+	public static boolean isNumeric(String value) {  
+		try  {  
+			int test = Integer.parseInt(value);  
+		} catch(NumberFormatException nfe)  {  
+			return false;  
+		}  
+		return true;  
+	}
+
+	private static Boolean findInArray(String[] checks, String input) {
+		for(int i = 0; i < checks.length; i++) {
+			if (checks[i].equals(input)) {
+				return true;
+			}
+		}
+		return false;
+	}	
+	// End of type checking methods
+	
+	public static void printArray(String[] val) {
+		for(int i = 0; i < val.length; i++) {
+			System.out.println(val[i]);
+		}
+	}
+	//A method that turns a string into a fraction and returns it.
+	private static Fraction makeFraction(String value) {
 		if (!(value.contains("/"))) {
 			//This is just a normal number. We need to make it a fraction.
 			value += "/1";
@@ -130,57 +175,5 @@ public class FractionCalculator{
 		String[] fract = value.split("/");
 		Fraction createdFraction = new Fraction(Integer.parseInt(fract[0]),Integer.parseInt(fract[1]));
 		return createdFraction;
-	}
-
-	
-	public static boolean isNumeric(String value) {  
-		try  {  
-			int test = Integer.parseInt(value);  
-		} catch(NumberFormatException nfe)  {  
-			return false;  
-		}  
-		return true;  
-	}	
-
-	public static Boolean isAbs(String value) {
-		Boolean result = false;
-		if ((value.equals("A")) || (value.equals("a")) || (value.equals("Abs"))) {
-			result = true;
-		}
-		return result;
-	}
-
-	public static Boolean isType(String value, String type) {
-		Boolean result = false;
-		if ((type.equals("neg")) && ((value.equals("n")) || (value.equals("N")) || (value.equals("neg")))) {
-			result = true;
-		} else if ((type.equals("abs")) && ((value.equals("a")) || (value.equals("A")) || (value.equals("abs")))) {
-			result = true;
-		} else if ((type.equals("cl")) && ((value.equals("c")) || (value.equals("C")) || (value.equals("clear")))) {
-			result = true;		
-		}
-		return result;
-	}
-
-	
-	private static Boolean findInArray(String[] checks, String input) {
-		for(int i = 0; i < checks.length; i++) {
-			if (checks[i].equals(input)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
-	private int getErrors() {
-		return this.errorCount;
-	}
-	
-	private void setErrors(int errors, String value) {
-		this.errorCount = errors;
-		if (!(value.equals(""))) {
-			System.out.println(value + " Your operator at the time of the error was :" + this.getOperator());
-		}
 	}
 }
