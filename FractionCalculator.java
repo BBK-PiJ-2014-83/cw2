@@ -123,7 +123,7 @@ public class FractionCalculator{
 	//End of accessors/mutators
 	
 	// Start of type checking methods
-	public static Boolean isFraction(String value) {
+	private static Boolean isFraction(String value) {
 		Boolean result = false;
 		if(value.contains("/"))  {
 			result = true;
@@ -133,7 +133,7 @@ public class FractionCalculator{
 		return result;
 	}
 	
-	public static Boolean isOperator(String value) {
+	private static Boolean isOperator(String value) {
 		Boolean result = false;
 		if ((value.equals("+")) || (value.equals("/")) || (value.equals("*")) || (value.equals("-"))) {
 			result = true;
@@ -141,7 +141,7 @@ public class FractionCalculator{
 		return result;
 	}
 
-	public static boolean isNumeric(String value) {  
+	private static boolean isNumeric(String value) {  
 		try  {  
 			int test = Integer.parseInt(value);  
 		} catch(NumberFormatException nfe)  {  
@@ -149,7 +149,7 @@ public class FractionCalculator{
 		}  
 		return true;  
 	}
-
+	
 	private static Boolean findInArray(String[] checks, String input) {
 		for(int i = 0; i < checks.length; i++) {
 			if (checks[i].equals(input)) {
